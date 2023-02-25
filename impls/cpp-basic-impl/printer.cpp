@@ -1,8 +1,5 @@
-#include <regex>
-#include <iostream>
-#include <string>
-
-#include "types.cpp"
+#include "printer.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -16,7 +13,7 @@ string pr_str(Token* elem, bool print_readably) {
         for (Token* elem : list->list) {
             strs.push_back(pr_str(elem, print_readably));
         }
-        return "(" + join(strs, " ") + ")";
+        return list->startSymbol + join(strs, " ") + list->endSymbol;
     } else if (TokenString* str = dynamic_cast<TokenString*>(elem)) {
         if (print_readably) {
             std::string s = str->value;

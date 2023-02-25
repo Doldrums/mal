@@ -1,35 +1,26 @@
 #include <regex>
-#include <iostream>
-#include <string>
 
-#include "types.cpp"
+#include "reader.h"
 
 using namespace std;
 
-class Reader {
-public:
-    Reader(std::vector<string>& tokens) : tokens_(tokens), index_(0) {}
+Reader::Reader(std::vector<string>& tokens) : tokens_(tokens), index_(0) {}
 
-    string next() {
-        if (index_ >= tokens_.size()) {
-            throw out_of_range("EOF while Reader::next()");
-        }
-
-        return tokens_[index_++];
+string Reader::next() {
+    if (index_ >= tokens_.size()) {
+        throw out_of_range("EOF while Reader::next()");
     }
 
-    string peek() {
-        if (index_ >= tokens_.size()) {
-            throw out_of_range("EOF while Reader::peek()");
-        }
+    return tokens_[index_++];
+}
 
-        return tokens_[index_];
+string Reader::peek() {
+    if (index_ >= tokens_.size()) {
+        throw out_of_range("EOF while Reader::peek()");
     }
 
-private:
-    vector<string>& tokens_;
-    size_t index_;
-};
+    return tokens_[index_];
+}
 
 
 vector<string> tokenize(string str) {
@@ -51,12 +42,10 @@ vector<string> tokenize(string str) {
     return matches;
 }
 
-Token* read_form(Reader& r);
-
-Token* read_list(Reader& r) {
-    TokenList* list = new TokenList();
+Token* read_list(Reader& r, char startSymbol, char endSymbol) {
+    TokenList* list = new TokenList(startSymbol, endSymbol);
     r.next(); // consume the '('
-    while (r.peek() != ")") {
+    while (r.peek()[0] != endSymbol) {
         list->list.push_back(read_form(r));
     }
     r.next(); // consume the ')'
@@ -85,6 +74,9 @@ Token* read_atom(Reader& r) {
         // number
         return new TokenNumber(std::stoi(token));
     } else {
+        if (isdigit(token[0])) {
+            throw std::runtime_error("symbol cant start with a digit");
+        }
         // symbol
         return new TokenSymbol(token);
     }
@@ -93,7 +85,11 @@ Token* read_atom(Reader& r) {
 Token* read_form(Reader& r) {
     string token = r.peek();
     if (token[0] == '(') {
-        return read_list(r);
+        return read_list(r, '(', ')');
+    } else if (token[0] == '{') {
+        return read_list(r, '{', '}');
+    } else if (token[0] == '[') {
+        return read_list(r, '[', ']');
     } else {
         return read_atom(r);
     }

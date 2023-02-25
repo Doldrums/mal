@@ -2,9 +2,9 @@
 #include <iostream>
 #include <memory>
 
-#include "reader.cpp"
-#include "printer.cpp"
-#include "types.cpp"
+#include "types.h"
+#include "reader.h"
+#include "printer.h"
 
 using namespace std;
 
