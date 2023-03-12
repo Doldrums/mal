@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <iomanip>
+#include <sstream>
 #include <vector>
 
 #include "types.h"

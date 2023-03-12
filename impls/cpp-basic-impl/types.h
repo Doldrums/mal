@@ -26,6 +26,13 @@ public:
     string name;
 };
 
+class TokenKeyword : public Token {
+public:
+    TokenKeyword(string v);
+
+    string value;
+};
+
 class TokenString : public Token {
 public:
     TokenString(string v);
@@ -35,11 +42,18 @@ public:
 
 class TokenNumber : public Token {
 public:
-    TokenNumber(int v);
+    TokenNumber(double v);
 
-    int value;
+    double value;
 };
 
 class TokenNil : public Token {};
 class TokenTrue : public Token {};
 class TokenFalse : public Token {};
+
+class TokenFunction : public Token {
+public:
+    TokenFunction(function<Token* (vector<Token*>)> fn);
+
+    function<Token* (vector<Token*>)> fn;
+};

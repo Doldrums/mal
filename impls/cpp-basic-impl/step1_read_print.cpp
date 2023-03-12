@@ -25,9 +25,12 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-string rep(const string& input)
-{
-    return PRINT(EVAL(READ(input)));
+string rep(const string& input) {
+    try {
+        return PRINT(EVAL(READ(input)));
+    } catch (const std::exception& e) {
+        return string("Error: ") + e.what();
+    }
 }
 
 Token* READ(const string& input)

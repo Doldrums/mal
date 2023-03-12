@@ -22,7 +22,6 @@ string Reader::peek() {
     return tokens_[index_];
 }
 
-
 vector<string> tokenize(string str) {
     vector<string> matches;
 
@@ -54,12 +53,23 @@ Token* read_list(Reader& r, char startSymbol, char endSymbol) {
 
 Token* read_atom(Reader& r) {
     string token = r.next();
-    if (token[0] == '"') {
+    if (token[0] == ':') {
+        // keyword
+        string str = token.substr(1, token.length() - 1);
+
+        return new TokenKeyword(str);
+    } else if (token[0] == '"') {
         // string
         string str = token.substr(1, token.length() - 2);
+        str = replace_all(str, "\\\\", "\u029e");
         str = replace_all(str, "\\\"", "\"");
         str = replace_all(str, "\\n", "\n");
-        str = replace_all(str, "\\\\", "\\");
+        str = replace_all(str, "\u029e", "\\");
+
+        if (token[token.length() - 1] != '"' || token.length() == 1) {
+            throw std::runtime_error("unbalanced string");
+        }
+        
         return new TokenString(str);
     } else if (token == "nil") {
         // nil
@@ -70,15 +80,17 @@ Token* read_atom(Reader& r) {
     } else if (token == "false") {
         // false
         return new TokenFalse();
-    } else if (std::all_of(token.begin(), token.end(), ::isdigit)) {
-        // number
-        return new TokenNumber(std::stoi(token));
     } else {
-        if (isdigit(token[0])) {
-            throw std::runtime_error("symbol cant start with a digit");
+        try {
+            // try parsing as double
+            double num = stod(token);
+            return new TokenNumber(num);
+        } catch (invalid_argument&) {
+            if (isdigit(token[0])) {
+                throw std::runtime_error("symbol cant start with a digit");
+            }
+            return new TokenSymbol(token);
         }
-        // symbol
-        return new TokenSymbol(token);
     }
 }
 
