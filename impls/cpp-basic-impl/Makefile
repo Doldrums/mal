@@ -13,10 +13,10 @@ DEBUG=-ggdb
 CXXFLAGS=-O3 -Wall $(DEBUG) -std=c++11
 LDFLAGS=-O3 $(DEBUG) -L.
 
-LIBSOURCES=reader.cpp printer.cpp types.cpp utils.cpp environment.cpp core.cpp
+LIBSOURCES=reader.cpp printer.cpp types.cpp utils.cpp environment.cpp core.cpp bridge.cpp lib.cpp
 LIBOBJS=$(LIBSOURCES:%.cpp=%.o)
 
-MAINS=$(wildcard step*.cpp)
+MAINS=main.cpp
 TARGETS=$(MAINS:%.cpp=%)
 
 .PHONY:	all clean
